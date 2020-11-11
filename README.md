@@ -24,4 +24,4 @@ To start contributing to this plugin, review the [Contributing to Pelican][] doc
 License
 -------
 
-This project is licensed under the MIT license.
+This project is licensed under the GPLv3 license.
