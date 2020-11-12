@@ -4,15 +4,21 @@
 
 Render math expressions to svg and embed them.
 
-Installation
-------------
+## Installation
 
 This plugin can be installed via:
+```shell
+python -m pip install pelican-math-svg
+```
 
-    python -m pip install pelican-math-svg
+## Roadmap
 
-Contributing
-------------
+- [x] inline math
+- [ ] block math
+- [x] automatic deployment
+- [ ] unit tests
+
+## Contributing
 
 Contributions are welcome and much appreciated. Every little bit helps. You can contribute by improving the documentation, adding missing features, and fixing bugs. You can also help out by reviewing and commenting on [existing issues][].
 
@@ -21,7 +27,6 @@ To start contributing to this plugin, review the [Contributing to Pelican][] doc
 [existing issues]: https://github.com/f-koehler/pelican-math-svg/issues
 [Contributing to Pelican]: https://docs.getpelican.com/en/latest/contribute.html
 
-License
--------
+## License
 
 This project is licensed under the GPLv3 license.
