@@ -1,6 +1,6 @@
 # math-svg: A Plugin for Pelican
 
-[![Build Status](https://img.shields.io/github/workflow/status/pelican-plugins/pelican-math-svg/build)](https://github.com/f-koehler/pelican-math-svg/actions) [![PyPI Version](https://img.shields.io/pypi/v/pelican-math-svg)](https://pypi.org/project/pelican-math-svg/) ![License](https://img.shields.io/pypi/l/pelican-math-svg?color=blue)
+[![PyPI Version](https://img.shields.io/pypi/v/pelican-math-svg)](https://pypi.org/project/pelican-math-svg/) ![License](https://img.shields.io/pypi/l/pelican-math-svg?color=blue)
 
 Render math expressions to svg and embed them.
 
