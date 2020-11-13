@@ -13,7 +13,7 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
     def __init__(self, extension, tag, pattern):
         super().__init__(pattern)
 
-        self.math_class = ".math"
+        self.math_class = "math"
         self.pelican_math_extension = extension
         self.tag = tag
 
