@@ -1,3 +1,6 @@
+import hashlib
+from pathlib import Path
+import shelve
 import subprocess
 from xml.etree.ElementTree import Element
 
@@ -7,6 +10,21 @@ regex_math_inline = r"(?P<prefix>\$)(?P<math>.+?)(?P<suffix>(?<!\s)\2)"
 regex_math_display = (
     r"(?P<prefix>\$\$|\\begin\{(.+?)\})(?P<math>.+?)(?P<suffix>\2|\\end\{\3\})"
 )
+
+
+def render_svg(math):
+    checksum = hashlib.md5(math.encode()).hexdigest()
+    path_shelf = Path("/tmp") / "pelican-math-svg" / "cache"
+    path_shelf.parent.mkdir(exist_ok=True, parents=True)
+
+    with shelve.open(str(path_shelf)) as shelf:
+        if checksum in shelf:
+            result = shelf[checksum]
+        else:
+            result = subprocess.check_output(["tex2svg", math]).decode().strip()
+            shelf[checksum] = result
+
+    return result
 
 
 class PelicanMathPattern(markdown.inlinepatterns.Pattern):
@@ -24,9 +42,7 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
         # prefix = "\\(" if m.group("prefix") == "$" else m.group("prefix")
         # suffix = "\\)" if m.group("suffix") == "$" else m.group("suffix")
         # node.text = markdown.util.AtomicString(prefix + m.group("math") + suffix)
-        node.text = (
-            subprocess.check_output(["tex2svg", m.group("math")]).decode().strip()
-        )
+        node.text = render_svg(m.group("math"))
         return node
 
 
