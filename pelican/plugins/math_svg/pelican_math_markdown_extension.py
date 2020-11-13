@@ -1,6 +1,7 @@
-import markdown
 import subprocess
 from xml.etree.ElementTree import Element
+
+import markdown
 
 regex_math_inline = r"(?P<prefix>\$)(?P<math>.+?)(?P<suffix>(?<!\s)\2)"
 regex_math_display = (

@@ -1,4 +1,5 @@
 import pelican.plugins.signals
+
 from .pelican_math_markdown_extension import PelicanMathExtension
 
 
