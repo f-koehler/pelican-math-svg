@@ -21,7 +21,11 @@ def render_svg(math):
         if checksum in shelf:
             result = shelf[checksum]
         else:
-            result = subprocess.check_output(["tex2svg", math]).decode().strip()
+            result = (
+                subprocess.check_output(["tex2svg", "--ex", "10", math])
+                .decode()
+                .strip()
+            )
             shelf[checksum] = result
 
     return result
