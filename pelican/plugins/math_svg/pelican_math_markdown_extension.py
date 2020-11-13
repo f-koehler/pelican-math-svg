@@ -46,6 +46,53 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
         return node
 
 
+class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
+    def __init__(self, extension):
+        self.math_class = "math"
+        self.pelican_math_extension = extension
+
+    def fix_display_math(self, root, children, math_divs, insert_index, text):
+        current_index = 0
+        for index in math_divs:
+            element = Element("p")
+            element.text = text
+            element.extend(children[current_index:index])
+
+            if (len(element) != 0) or (element.text and not element.text.isspace()):
+                root.insert(insert_index, element)
+                insert_index += 1
+
+            text = children[index].tail
+            children[index].tail = None
+            root.insert(insert_index, children[index])
+            current_index = index + 1
+
+        element = Element("p")
+        element.text = text
+        element.extend(children[current_index:])
+
+        if (len(element) != 0) or (element.text and not element.text.isspace()):
+            root.insert(insert_index, element)
+
+    def run(self, root):
+        for parent in root:
+            math_divs = []
+            children = list(parent)
+
+            for div in parent.findall("div"):
+                if div.get("class") == self.math_class:
+                    math_divs.append(children.index(div))
+
+            if not math_divs:
+                continue
+
+            insert_idx = list(root).index(parent)
+            self.fix_display_math(root, children, math_divs, insert_idx, parent.text)
+            root.remove(parent)
+
+        return root
+
+
 class PelicanMathExtension(markdown.Extension):
     def __init__(self):
         super().__init__()
@@ -57,4 +104,8 @@ class PelicanMathExtension(markdown.Extension):
 
         md.inlinePatterns.register(
             PelicanMathPattern(self, "span", regex_math_inline), "math_inlined", 185
+        )
+
+        md.treeprocessors.register(
+            PelicanMathFixDisplay(self), "math_correct_displayed", 15
         )
