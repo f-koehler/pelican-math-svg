@@ -12,6 +12,20 @@ This plugin can be installed via:
 python -m pip install pelican-math-svg
 ```
 
+This plugin depends `tex2svg` from the [`mathjax-node-cli`](https://github.com/mathjax/mathjax-node-cli) module that relies on the official [`MathJax-node`](https://github.com/mathjax/MathJax-node) module.
+This can be easily installed using `yarn`
+
+```shell
+yarn global add mathjax-node-cli
+```
+
+or `npm`
+
+```shell
+npm install -g mathjax-node-cli
+```
+
+
 ## Roadmap
 
 * [x] Markdown support
@@ -20,6 +34,8 @@ python -m pip install pelican-math-svg
 * [ ] RST support
   * [ ] inline
   * [ ] display
+* [x] cache rendered SVG
+* [ ] plugin settings
 
 ## Contributing
 
