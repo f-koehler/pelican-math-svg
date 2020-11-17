@@ -1,10 +1,16 @@
-from pathlib import Path
-from xml.etree.ElementTree import Element
 import hashlib
+from pathlib import Path
 import re
 import shelve
 import subprocess
-from typing import List
+from typing import Any, List
+from xml.etree.ElementTree import Element
+import sys
+
+if (sys.version_info[0] >= 3) and (sys.version_info[1] >= 7):
+    Match = re.Match
+else:
+    Match = Any
 
 import markdown
 
@@ -41,7 +47,7 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
         self.pelican_math_extension = extension
         self.tag = tag
 
-    def handleMatch(self, m: re.Match) -> Element:
+    def handleMatch(self, m: Match) -> Element:
         node = Element(self.tag)
         node.set("class", self.math_class)
 
@@ -57,7 +63,14 @@ class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
         self.math_class = "math"
         self.pelican_math_extension = extension
 
-    def fix_display_math(self, root: Element, children: List[Element], math_divs: List[int], insert_index :int, text: str):
+    def fix_display_math(
+        self,
+        root: Element,
+        children: List[Element],
+        math_divs: List[int],
+        insert_index: int,
+        text: str,
+    ):
         current_index = 0
         for index in math_divs:
             element = Element("p")
