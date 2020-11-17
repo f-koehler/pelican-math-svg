@@ -48,6 +48,7 @@ Werkzeug = "^1.0"
 bandit = "^1.6.2"
 mypy = "^0.790"
 pylint = "^2.6.0"
+jedi = "^0.17.2"
 
 [tool.poetry.extras]
 markdown = ["markdown"]
