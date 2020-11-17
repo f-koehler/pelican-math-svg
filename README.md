@@ -36,6 +36,7 @@ npm install -g mathjax-node-cli
   * [ ] display
 * [x] cache rendered SVG
 * [ ] plugin settings
+* [ ] unit tests
 
 ## Contributing
 
