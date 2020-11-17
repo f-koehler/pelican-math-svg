@@ -1,8 +1,10 @@
-import hashlib
 from pathlib import Path
+from xml.etree.ElementTree import Element
+import hashlib
+import re
 import shelve
 import subprocess
-from xml.etree.ElementTree import Element
+from typing import List
 
 import markdown
 
@@ -12,7 +14,7 @@ regex_math_display = (
 )
 
 
-def render_svg(math):
+def render_svg(math: str) -> str:
     checksum = hashlib.md5(math.encode()).hexdigest()
     path_shelf = Path("/tmp") / "pelican-math-svg" / "cache"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
@@ -32,14 +34,14 @@ def render_svg(math):
 
 
 class PelicanMathPattern(markdown.inlinepatterns.Pattern):
-    def __init__(self, extension, tag, pattern):
+    def __init__(self, extension: "PelicanMathExtension", tag: str, pattern: str):
         super().__init__(pattern)
 
         self.math_class = "math"
         self.pelican_math_extension = extension
         self.tag = tag
 
-    def handleMatch(self, m):
+    def handleMatch(self, m: re.Match) -> Element:
         node = Element(self.tag)
         node.set("class", self.math_class)
 
@@ -51,11 +53,11 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
 
 
 class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
-    def __init__(self, extension):
+    def __init__(self, extension: "PelicanMathExtension"):
         self.math_class = "math"
         self.pelican_math_extension = extension
 
-    def fix_display_math(self, root, children, math_divs, insert_index, text):
+    def fix_display_math(self, root: Element, children: List[Element], math_divs: List[int], insert_index :int, text: str):
         current_index = 0
         for index in math_divs:
             element = Element("p")
@@ -78,7 +80,7 @@ class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
         if (len(element) != 0) or (element.text and not element.text.isspace()):
             root.insert(insert_index, element)
 
-    def run(self, root):
+    def run(self, root: Element) -> Element:
         for parent in root:
             math_divs = []
             children = list(parent)
@@ -101,7 +103,7 @@ class PelicanMathExtension(markdown.Extension):
     def __init__(self):
         super().__init__()
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: markdown.core.Markdown):
         md.inlinePatterns.register(
             PelicanMathPattern(self, "div", regex_math_display), "math_displayed", 186
         )
