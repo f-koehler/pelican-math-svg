@@ -22,7 +22,7 @@ regex_math_display = (
 
 def render_svg(math: str) -> str:
     checksum = hashlib.md5(math.encode()).hexdigest()
-    path_shelf = Path("/tmp") / "pelican-math-svg" / "cache"
+    path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 
     with shelve.open(str(path_shelf)) as shelf:
