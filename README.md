@@ -25,19 +25,18 @@ or `npm`
 npm install -g mathjax-node-cli
 ```
 
-
 ## Roadmap
 
-* [x] Markdown support
-  * [x] inline
-  * [x] display
-* [ ] RST support
-  * [ ] inline
-  * [ ] display
-* [x] cache rendered SVG
-* [ ] plugin settings
-* [ ] unit tests
-* [x] type annotations
+-   [x] Markdown support
+    -   [x] inline
+    -   [x] display
+-   [ ] RST support
+    -   [ ] inline
+    -   [ ] display
+-   [x] cache rendered SVG
+-   [ ] plugin settings
+-   [ ] unit tests
+-   [x] type annotations
 
 ## Contributing
 
@@ -46,7 +45,7 @@ Contributions are welcome and much appreciated. Every little bit helps. You can 
 To start contributing to this plugin, review the [Contributing to Pelican][] documentation, beginning with the **Contributing Code** section.
 
 [existing issues]: https://github.com/f-koehler/pelican-math-svg/issues
-[Contributing to Pelican]: https://docs.getpelican.com/en/latest/contribute.html
+[contributing to pelican]: https://docs.getpelican.com/en/latest/contribute.html
 
 ## License
 

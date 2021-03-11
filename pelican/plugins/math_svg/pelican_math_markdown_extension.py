@@ -3,9 +3,9 @@ from pathlib import Path
 import re
 import shelve
 import subprocess
-from typing import Any, List
-from xml.etree.ElementTree import Element
 import sys
+from typing import Any, List, Optional
+from xml.etree.ElementTree import Element
 
 if (sys.version_info[0] >= 3) and (sys.version_info[1] >= 7):
     Match = re.Match
@@ -69,7 +69,7 @@ class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
         children: List[Element],
         math_divs: List[int],
         insert_index: int,
-        text: str,
+        text: Optional[str],
     ):
         current_index = 0
         for index in math_divs:

@@ -28,7 +28,7 @@ classifiers = [
 "Issue Tracker" = "https://github.com/f-koehler/pelican-math-svg/issues"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = ">=3.6.1,<4.0"
 pelican = "^4.5"
 markdown = {version = "^3.2.2", optional = true}
 
@@ -49,6 +49,7 @@ bandit = "^1.6.2"
 mypy = "^0.812"
 pylint = "^2.6.0"
 jedi = "^0.18.0"
+pre-commit = "^2.11.1"
 
 [tool.poetry.extras]
 markdown = ["markdown"]

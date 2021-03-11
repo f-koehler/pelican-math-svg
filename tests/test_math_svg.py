@@ -1,5 +1,5 @@
-from pelican.plugins import math_svg
+# from pelican.plugins import math_svg
 
 
-def test_regex_inline():
-    pass
+# def test_regex_inline():
+#     pass
