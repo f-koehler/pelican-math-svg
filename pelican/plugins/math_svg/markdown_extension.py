@@ -14,11 +14,6 @@ else:
 
 import markdown
 
-regex_math_inline = r"(?P<prefix>\$)(?P<math>.+?)(?P<suffix>(?<!\s)\2)"
-regex_math_display = (
-    r"(?P<prefix>\$\$|\\begin\{(.+?)\})(?P<math>.+?)(?P<suffix>\2|\\end\{\3\})"
-)
-
 
 def render_svg(math: str) -> str:
     checksum = hashlib.md5(math.encode()).hexdigest()
@@ -40,7 +35,7 @@ def render_svg(math: str) -> str:
 
 
 class PelicanMathPattern(markdown.inlinepatterns.Pattern):
-    def __init__(self, extension: "PelicanMathExtension", tag: str, pattern: str):
+    def __init__(self, extension, tag: str, pattern: str):
         super().__init__(pattern)
 
         self.math_class = "math"
@@ -59,7 +54,7 @@ class PelicanMathPattern(markdown.inlinepatterns.Pattern):
 
 
 class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
-    def __init__(self, extension: "PelicanMathExtension"):
+    def __init__(self, extension):
         self.math_class = "math"
         self.pelican_math_extension = extension
 
@@ -110,21 +105,3 @@ class PelicanMathFixDisplay(markdown.treeprocessors.Treeprocessor):
             root.remove(parent)
 
         return root
-
-
-class PelicanMathExtension(markdown.Extension):
-    def __init__(self):
-        super().__init__()
-
-    def extendMarkdown(self, md: markdown.core.Markdown):
-        md.inlinePatterns.register(
-            PelicanMathPattern(self, "div", regex_math_display), "math_displayed", 186
-        )
-
-        md.inlinePatterns.register(
-            PelicanMathPattern(self, "span", regex_math_inline), "math_inlined", 185
-        )
-
-        md.treeprocessors.register(
-            PelicanMathFixDisplay(self), "math_correct_displayed", 15
-        )

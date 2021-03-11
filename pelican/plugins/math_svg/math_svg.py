@@ -1,6 +1,6 @@
 import pelican.plugins.signals
 
-from .pelican_math_markdown_extension import PelicanMathExtension
+from .extension import PelicanMathExtension
 
 
 def init_math(sender):
