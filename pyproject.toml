@@ -51,6 +51,9 @@ pylint = "^2.6.0"
 jedi = "^0.18.0"
 pre-commit = "^2.11.1"
 
+[tool.poetry.scripts]
+pelican-math-svg = "pelican.plugins.math_svg.main:main"
+
 [tool.poetry.extras]
 markdown = ["markdown"]
 

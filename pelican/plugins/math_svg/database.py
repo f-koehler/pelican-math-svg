@@ -33,7 +33,6 @@ class Database:
 
     def add_equation(self, equation: str, rendered: Optional[str] = None):
         hash = hash_equation(equation)
-        print(equation)
         self.cursor.execute(
             "INSERT OR REPLACE INTO equations VALUES (?, ?, ?)",
             (hash, equation, rendered),
@@ -49,3 +48,7 @@ class Database:
             return entry
 
         return None
+
+    def fetch_missing_equations(self) -> list[str]:
+        self.cursor.execute("SELECT equation FROM equations WHERE rendered IS NULL")
+        return [entry[0] for entry in self.cursor.fetchall()]
