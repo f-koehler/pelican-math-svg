@@ -33,16 +33,19 @@ class Database:
 
     def add_equation(self, equation: str, rendered: Optional[str] = None):
         hash = hash_equation(equation)
+        print(equation)
         self.cursor.execute(
-            "UPSERT INTO equations VALUES (?, ?, ?)", (hash, equation, rendered)
+            "INSERT OR REPLACE INTO equations VALUES (?, ?, ?)",
+            (hash, equation, rendered),
         )
         self.connection.commit()
 
     def fetch_rendered_equation(self, equation: str) -> Optional[str]:
         hash = hash_equation(equation)
-        self.cursor.execute("SELECT * FROM equations WHERE hash == ?", hash)
+        self.cursor.execute("SELECT rendered FROM equations WHERE hash = ?", (hash,))
         entry = self.cursor.fetchone()
+        self.connection.commit()
         if entry:
-            return entry[2]
+            return entry
 
         return None

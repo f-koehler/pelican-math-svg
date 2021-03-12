@@ -1,11 +1,11 @@
-import hashlib
 from pathlib import Path
 import re
-import shelve
 import subprocess
 import sys
 from typing import Any, List, Optional
 from xml.etree.ElementTree import Element
+
+from .database import Database
 
 if (sys.version_info[0] >= 3) and (sys.version_info[1] >= 7):
     Match = re.Match
@@ -16,22 +16,22 @@ import markdown
 
 
 def render_svg(math: str) -> str:
-    checksum = hashlib.md5(math.encode()).hexdigest()
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 
-    with shelve.open(str(path_shelf)) as shelf:
-        if checksum in shelf:
-            result = shelf[checksum]
-        else:
-            result = (
-                subprocess.check_output(["tex2svg", "--ex", "10", "{}" + math])
-                .decode()
-                .strip()
-            )
-            shelf[checksum] = result
+    equation = math.strip()
 
-    return result
+    db = Database()
+    (svg,) = db.fetch_rendered_equation(equation)
+    if svg is None:
+        svg = (
+            subprocess.check_output(["tex2svg", "--ex", "10", "{}" + equation])
+            .decode()
+            .strip()
+        )
+        db.add_equation(equation, svg)
+
+    return svg
 
 
 class PelicanMathPattern(markdown.inlinepatterns.Pattern):
