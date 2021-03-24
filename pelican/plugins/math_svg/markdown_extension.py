@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -19,17 +20,26 @@ def render_svg(math: str) -> str:
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 
+    if os.environ.get("PELICAN_MATH_SVG_DRY", "FALSE").upper() == "FALSE":
+        dry_mode = False
+    else:
+        dry_mode = True
+
     equation = math.strip()
 
     db = Database()
-    (svg,) = db.fetch_rendered_equation(equation)
+    svg = db.fetch_rendered_equation(equation)
     if svg is None:
-        svg = (
-            subprocess.check_output(["tex2svg", "--ex", "10", "{}" + equation])
-            .decode()
-            .strip()
-        )
-        db.add_equation(equation, svg)
+        if dry_mode:
+            db.add_equation(equation)
+            svg = f"<code>${equation}$</code>"
+        else:
+            svg = (
+                subprocess.check_output(["tex2svg", "--ex", "10", "{}" + equation])
+                .decode()
+                .strip()
+            )
+            db.add_equation(equation, svg)
 
     return svg
 

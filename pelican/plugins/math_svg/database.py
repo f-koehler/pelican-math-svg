@@ -45,7 +45,7 @@ class Database:
         entry = self.cursor.fetchone()
         self.connection.commit()
         if entry:
-            return entry
+            return entry[0]
 
         return None
 
