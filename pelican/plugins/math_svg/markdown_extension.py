@@ -4,12 +4,13 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Any, Tuple, Union
+from typing import Any
 import uuid
-from xml.etree.ElementTree import Element
+from xml.etree import ElementTree
 
+import lxml.etree
+from markdown.blockprocessors import BlockProcessor
 from markdown.inlinepatterns import InlineProcessor
-from markdown.util import AtomicString
 
 from .database import Database
 
@@ -17,8 +18,6 @@ if (sys.version_info[0] >= 3) and (sys.version_info[1] >= 7):
     Match = re.Match
 else:
     Match = Any
-
-import markdown
 
 DEFAULT_PREAMBLE = [
     r"\documentclass{standalone}",
@@ -40,81 +39,112 @@ def render_svg(math: str) -> str:
 
     db = Database()
     svg = db.fetch_rendered_equation(equation)
-    if svg is None:
-        if dry_mode:
-            db.add_equation(equation)
-            return f"<code>${equation}$</code>"
+    if svg is not None:
+        return svg
 
-        equationid = uuid.uuid4().hex
-        working_dir = Path.cwd() / ".cache" / "pelican-math-svg" / "tmp" / equationid
-        if working_dir.exists():
-            shutil.rmtree(working_dir)
-        working_dir.mkdir(parents=True)
+    if dry_mode:
+        db.add_equation(equation)
+        return f"<code>${equation}$</code>"
 
-        # generate LaTeX code
-        code = DEFAULT_PREAMBLE + [
-            r"\begin{document}",
-            r"$\!",
-            equation,
-            r"$",
-            r"\end{document}",
-        ]
+    equationid = uuid.uuid4().hex
+    working_dir = Path.cwd() / ".cache" / "pelican-math-svg" / "tmp" / equationid
+    if working_dir.exists():
+        shutil.rmtree(working_dir)
+    working_dir.mkdir(parents=True)
 
-        # write LaTeX file
-        texfile_path = working_dir / "input.tex"
-        with open(texfile_path, "w") as fptr:
-            fptr.write("\n".join(code))
+    # generate LaTeX code
+    code = DEFAULT_PREAMBLE + [
+        r"\begin{document}",
+        r"$\!",
+        equation,
+        r"$",
+        r"\end{document}",
+    ]
 
-        try:
-            # render LaTeX to pdf file
-            subprocess.check_output(
-                [
-                    "lualatex",
-                    f"--output-directory={working_dir}",
-                    "--interaction=errorstopmode",
-                    "--halt-on-error",
-                    "--output-format=dvi",
-                    texfile_path,
-                ]
-            )
+    # write LaTeX file
+    texfile_path = working_dir / "input.tex"
+    with open(texfile_path, "w") as fptr:
+        fptr.write("\n".join(code))
 
-            # convert pdf to svg
-            svgfile_path = working_dir / "output.svg"
-            subprocess.check_output(
-                [
-                    "dvisvgm",
-                    "--optimize=all",
-                    "--no-fonts",
-                    "--exact-bbox",
-                    f"--output={svgfile_path}",
-                    Path(working_dir) / "input.dvi",
-                ]
-            ).decode().strip()
+    try:
+        # render LaTeX to pdf file
+        subprocess.check_output(
+            [
+                "lualatex",
+                f"--output-directory={working_dir}",
+                "--interaction=errorstopmode",
+                "--halt-on-error",
+                "--output-format=dvi",
+                texfile_path,
+            ]
+        )
 
-            with open(svgfile_path) as fptr:
-                svg = (
-                    fptr.read()
-                    .replace("<?xml version='1.0' encoding='UTF-8'?>", "")
-                    .strip()
-                )
+        # convert pdf to svg
+        svgfile_path = working_dir / "output.svg"
+        subprocess.check_output(
+            [
+                "dvisvgm",
+                "--optimize=all",
+                "--no-fonts",
+                "--exact-bbox",
+                f"--output={svgfile_path}",
+                Path(working_dir) / "input.dvi",
+            ]
+        ).decode().strip()
 
-            shutil.rmtree(working_dir)
+        with open(svgfile_path) as fptr:
+            svg = fptr.read().strip()
 
-            db.add_equation(equation, svg)
-            return svg
+        svg = lxml.etree.tostring(
+            lxml.etree.fromstring(svg.encode(), parser=lxml.etree.ETCompatXMLParser())
+        ).decode()
 
-        except subprocess.CalledProcessError:
-            print(f"error rendering formula, check job {equationid}", file=sys.stderr)
-            return f"<code>${equation}$</code>"
+        shutil.rmtree(working_dir)
 
-    return None
+        db.add_equation(equation, svg)
+        return svg
+
+    except subprocess.CalledProcessError:
+        print(f"error rendering formula, check job {equationid}", file=sys.stderr)
+        return f"<code>${equation}$</code>"
 
 
 class InlineMathProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         equation = m.group(1).strip()
         svg = render_svg(self.unescape(equation))
-        element = Element("span")
+        element = ElementTree.Element("span")
         element.set("class", "math")
-        element.text = AtomicString(svg)
+        element.text = self.md.htmlStash.store(svg)
         return element, m.start(0), m.end(0)
+
+
+class DisplayMathProcessor(BlockProcessor):
+    RE_START = re.compile(r"^\s*\$\$\s*\n")
+    RE_END = re.compile(r"\n\s*\$\$\s*$")
+
+    def test(self, parent, block):
+        return self.RE_START.match(block)
+
+    def run(self, parent, blocks):
+        original_block = blocks[0]
+
+        # remove starting fence
+        blocks[0] = self.RE_START.sub("", blocks[0])
+
+        for block_index, block in enumerate(blocks):
+            if self.RE_END.search(block):
+                # remove ending fence
+                blocks[block_index] = self.RE_END.sub("", block)
+
+                element = ElementTree.SubElement(parent, "div")
+                element.set("class", "math")
+                element.text = self.parser.md.htmlStash.store(render_svg(block.strip()))
+                self.parser.parseBlocks(element, blocks[0 : block_index + 1])
+
+                for i in range(0, block_index + 1):
+                    blocks.pop(0)
+                return True
+
+        blocks[0] = original_block
+        return False

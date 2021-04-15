@@ -1,11 +1,6 @@
 import markdown
 
-from .markdown_extension import InlineMathProcessor
-
-regex_math_inline = r"(?P<prefix>\$)(?P<math>.+?)(?P<suffix>(?<!\s)\2)"
-regex_math_display = (
-    r"(?P<prefix>\$\$|\\begin\{(.+?)\})(?P<math>.+?)(?P<suffix>\2|\\end\{\3\})"
-)
+from .markdown_extension import DisplayMathProcessor, InlineMathProcessor
 
 
 class PelicanMathExtension(markdown.Extension):
@@ -14,7 +9,10 @@ class PelicanMathExtension(markdown.Extension):
 
     def extendMarkdown(self, md: markdown.core.Markdown):
         md.inlinePatterns.register(
-            InlineMathProcessor(r"(?<!\\)\$((?:[^$]|\\\$)+)(?<!\\)\$", md),
+            InlineMathProcessor(r"(?<!\\|\$)\$((?:[^$]|\\\$)+)(?<!\\)\$(?!\$)", md),
             "inline_math",
             200,
+        )
+        md.parser.blockprocessors.register(
+            DisplayMathProcessor(md.parser), "display_math", 200
         )
