@@ -87,6 +87,7 @@ def render_svg(math: str) -> str:
                 "--optimize=all",
                 "--no-fonts",
                 "--exact-bbox",
+                "--scale=1.5",
                 f"--output={svgfile_path}",
                 Path(working_dir) / "input.dvi",
             ]
