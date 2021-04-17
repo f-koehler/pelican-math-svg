@@ -87,7 +87,6 @@ def render_svg(math: str) -> str:
                 "--optimize=all",
                 "--no-fonts",
                 "--exact-bbox",
-                "--scale=1.5",
                 f"--output={svgfile_path}",
                 Path(working_dir) / "input.dvi",
             ]
@@ -141,7 +140,7 @@ class DisplayMathProcessor(BlockProcessor):
                 element = ElementTree.SubElement(parent, "div")
                 element.set("class", "math")
                 element.text = self.parser.md.htmlStash.store(render_svg(block.strip()))
-                self.parser.parseBlocks(element, blocks[0 : block_index + 1])
+                # self.parser.parseBlocks(element, blocks[0 : block_index + 1])
 
                 for i in range(0, block_index + 1):
                     blocks.pop(0)
