@@ -20,7 +20,7 @@ else:
     Match = Any
 
 DEFAULT_PREAMBLE = [
-    r"\documentclass{standalone}",
+    r"\documentclass[preview]{standalone}",
     r"\usepackage{amsmath}",
     r"\usepackage{amssymb}",
 ]
@@ -74,7 +74,7 @@ def render_svg(math: str) -> str:
                 f"--output-directory={working_dir}",
                 "--interaction=errorstopmode",
                 "--halt-on-error",
-                "--output-format=dvi",
+                # "--output-format=dvi",
                 texfile_path,
             ]
         )
@@ -84,11 +84,12 @@ def render_svg(math: str) -> str:
         subprocess.check_output(
             [
                 "dvisvgm",
+                "-P",
                 "--optimize=all",
                 "--no-fonts",
                 "--exact-bbox",
                 f"--output={svgfile_path}",
-                Path(working_dir) / "input.dvi",
+                Path(working_dir) / "input.pdf",
             ]
         ).decode().strip()
 
