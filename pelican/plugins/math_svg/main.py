@@ -16,7 +16,7 @@ def main():
     with multiprocessing.Pool(args.jobs) as pool:
         rendered = pool.map(render_svg, missing)
 
-    print("rendered {} equations".format(len(rendered)))
+    print(f"rendered {len(rendered)} equations")
 
     for equation, render in zip(missing, rendered):
         db.add_equation(equation, render)

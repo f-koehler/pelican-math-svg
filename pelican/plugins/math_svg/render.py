@@ -1,8 +1,8 @@
-from pathlib import Path
-import uuid
 import os
+from pathlib import Path
 import shutil
 import subprocess
+import uuid
 
 import lxml.etree
 
