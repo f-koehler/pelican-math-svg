@@ -20,7 +20,7 @@ else:
     Match = Any
 
 DEFAULT_PREAMBLE = [
-    r"\documentclass[crop,border={3pt 0pt}]{standalone}",
+    r"\documentclass[crop,border={2pt 0pt}]{standalone}",
     r"\usepackage{amsmath}",
     r"\usepackage{amssymb}",
 ]
@@ -139,11 +139,14 @@ class DisplayMathProcessor(BlockProcessor):
         for block_index, block in enumerate(blocks):
             if self.RE_END.search(block):
                 # remove ending fence
-                blocks[block_index] = self.RE_END.sub("", block)
+                stripped_block = self.RE_END.sub("", block)
+                blocks[block_index] = stripped_block
 
                 element = ElementTree.SubElement(parent, "div")
                 element.set("class", "math")
-                element.text = self.parser.md.htmlStash.store(render_svg(block.strip()))
+                element.text = self.parser.md.htmlStash.store(
+                    render_svg(stripped_block.strip())
+                )
                 # self.parser.parseBlocks(element, blocks[0 : block_index + 1])
 
                 for i in range(0, block_index + 1):
