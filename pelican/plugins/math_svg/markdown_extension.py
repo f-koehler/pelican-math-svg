@@ -20,7 +20,7 @@ else:
     Match = Any
 
 DEFAULT_PREAMBLE = [
-    r"\documentclass[preview]{standalone}",
+    r"\documentclass[crop,border={3pt 0pt}]{standalone}",
     r"\usepackage{amsmath}",
     r"\usepackage{amssymb}",
 ]
@@ -79,19 +79,22 @@ def render_svg(math: str) -> str:
             ]
         )
 
+        subprocess.check_output(["pdfcrop", "--hires", Path(working_dir) / "input.pdf"])
+
         # convert pdf to svg
         svgfile_path = working_dir / "output.svg"
+        subprocess.check_output(["pdfcrop", Path(working_dir) / "input.pdf"])
         subprocess.check_output(
             [
                 "dvisvgm",
-                "-P",
+                "--pdf",
                 "--optimize=all",
                 "--no-fonts",
                 "--exact-bbox",
                 f"--output={svgfile_path}",
                 Path(working_dir) / "input.pdf",
             ]
-        ).decode().strip()
+        )
 
         with open(svgfile_path) as fptr:
             svg = fptr.read().strip()
