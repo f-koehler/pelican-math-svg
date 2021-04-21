@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import uuid
 
 import lxml.etree
@@ -13,6 +14,22 @@ DEFAULT_PREAMBLE = [
     r"\usepackage{amsmath}",
     r"\usepackage{amssymb}",
 ]
+
+
+def remove_svg_comments(code: str) -> str:
+    return lxml.etree.tostring(
+        lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
+    ).decode()
+
+
+def remove_svg_pageid(code: str) -> str:
+    doc = lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
+    for element in doc.xpath(
+        "//svg:g", namespaces={"svg": "http://www.w3.org/2000/svg"}
+    ):
+        if element.attrib.get("id", "") == "page1":
+            element.attrib.pop("id")
+    return lxml.etree.tostring(doc).decode()
 
 
 def render_svg(math: str) -> str:
@@ -88,9 +105,8 @@ def render_svg(math: str) -> str:
         with open(svgfile_path) as fptr:
             svg = fptr.read().strip()
 
-        svg = lxml.etree.tostring(
-            lxml.etree.fromstring(svg.encode(), parser=lxml.etree.ETCompatXMLParser())
-        ).decode()
+        svg = remove_svg_comments(svg)
+        svg = remove_svg_pageid(svg)
 
         shutil.rmtree(working_dir)
 
