@@ -58,17 +58,14 @@ pelican-math-svg = "pelican.plugins.math_svg.main:main"
 [tool.poetry.extras]
 markdown = ["markdown"]
 
-# [tool.autopub]
-# project-name = "math-svg"
-# git-username = "botpub"
-# git-email = "botpub@autopub.rocks"
+[tool.autopub]
+project-name = "math-svg"
+git-username = "f-koehler"
+git-email = "fabian.koehler@protonmail.ch"
 
 [tool.isort]
 # Maintain compatibility with Black
-combine_as_imports = true
-force_grid_wrap = 0
-include_trailing_comma = true
-line_length = 88
+profile = "black"
 multi_line_output = 3
 
 # Sort imports within their section independent of the import type
@@ -79,5 +76,5 @@ known_pelican = "pelican"
 sections = "FUTURE,STDLIB,THIRDPARTY,PELICAN,FIRSTPARTY,LOCALFOLDER"
 
 [build-system]
-requires = ["poetry>=1.0"]
+requires = ["poetry>=1.0.0"]
 build-backend = "poetry.masonry.api"
