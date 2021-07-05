@@ -7,7 +7,7 @@ from typing import Any
 from pelican import Pelican
 
 
-class MathSvgSettings:
+class PelicanMathSettings:
     def __init__(self):
         self.scour: bool = True if shutil.which("scour") else False
         self.scour_args: list[str] = [
