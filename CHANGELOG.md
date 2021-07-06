@@ -1,5 +1,5 @@
-# CHANGELOG
 
-## 0.3.0 - 2021-04-22
+0.4.0 - 2021-07-06
+------------------
 
-Change license to AGPL-3.0.
+Add option to optimize SVG output using `scour` and `svgo`. Start to make settings configurable via `pelicanconf.py`.

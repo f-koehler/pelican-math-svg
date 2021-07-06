@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pelican-math-svg"
-version = "0.3.0"
+version = "0.4.0"
 description = "Render math expressions to svg and embed them."
 authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
 license = "AGLP-3.0"
