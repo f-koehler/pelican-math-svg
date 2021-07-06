@@ -1,3 +1,5 @@
-## 0.4.1 - 2021-07-06
 
-Store plugin version in database to trigger equation rebuild when plugin is updated.
+0.4.2 - 2021-07-06
+------------------
+
+Add settings controlling latex options/preamble as well as pdfcrop and dvisvgm options.
