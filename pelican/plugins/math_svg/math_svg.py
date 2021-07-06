@@ -1,5 +1,5 @@
-import pelican.plugins.signals
 from pelican import Pelican
+import pelican.plugins.signals
 
 from .extension import PelicanMathExtension
 from .settings import PelicanMathSettings

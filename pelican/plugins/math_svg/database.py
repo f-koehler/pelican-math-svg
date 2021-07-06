@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 import sqlite3
-from typing import Optional, Tuple
 
 from .settings import PelicanMathSettings
 
@@ -33,7 +32,7 @@ class Database:
         self,
         equation: str,
         settings: PelicanMathSettings,
-        rendered: Optional[str] = None,
+        rendered: str | None = None,
     ):
         hash = hash_equation(equation)
         self.cursor.execute(

@@ -1,6 +1,6 @@
 import argparse
-import multiprocessing
 from functools import partial
+import multiprocessing
 
 from pelican import get_instance, parse_arguments
 

@@ -1,7 +1,6 @@
 import markdown
 
 from .markdown_extension import DisplayMathProcessor, InlineMathProcessor
-
 from .settings import PelicanMathSettings
 
 
