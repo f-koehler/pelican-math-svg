@@ -10,12 +10,6 @@ import lxml.etree
 from .database import Database
 from .settings import PelicanMathSettings
 
-DEFAULT_PREAMBLE = [
-    r"\documentclass[crop,border={2pt 0pt}]{standalone}",
-    r"\usepackage{amsmath}",
-    r"\usepackage{amssymb}",
-]
-
 
 def remove_svg_comments(code: str) -> str:
     return lxml.etree.tostring(
@@ -84,7 +78,7 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
     working_dir.mkdir(parents=True)
 
     # generate LaTeX code
-    code = DEFAULT_PREAMBLE + [
+    code = settings.latex_preamble + [
         r"\begin{document}",
         r"$\!",
         equation,
@@ -101,16 +95,24 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
         # render LaTeX to pdf file
         subprocess.check_output(
             [
-                "lualatex",
+                settings.latex_program,
                 f"--output-directory={working_dir}",
-                "--interaction=errorstopmode",
-                "--halt-on-error",
-                # "--output-format=dvi",
-                texfile_path,
+            ]
+            + settings.latex_args
+            + [
+                str(texfile_path),
             ]
         )
 
-        subprocess.check_output(["pdfcrop", "--hires", Path(working_dir) / "input.pdf"])
+        subprocess.check_output(
+            [
+                "pdfcrop",
+            ]
+            + settings.pdfcrop_args
+            + [
+                str(Path(working_dir) / "input.pdf"),
+            ]
+        )
 
         # convert pdf to svg
         svgfile_path = working_dir / "output.svg"
@@ -118,12 +120,11 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
         subprocess.check_output(
             [
                 "dvisvgm",
-                "--pdf",
-                "--optimize=all",
-                "--no-fonts",
-                "--exact-bbox",
+            ]
+            + settings.dvisvgm_args
+            + [
                 f"--output={svgfile_path}",
-                Path(working_dir) / "input.pdf",
+                str(Path(working_dir) / "input.pdf"),
             ]
         )
 
