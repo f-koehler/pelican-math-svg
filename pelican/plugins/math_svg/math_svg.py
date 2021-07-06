@@ -6,10 +6,10 @@ from .settings import PelicanMathSettings
 
 
 def init_math(sender: Pelican):
-    sender.settings["MARKDOWN"].setdefault("extensions", []).append(
-        PelicanMathExtension()
-    )
     settings = PelicanMathSettings.from_settings(sender)
+    sender.settings["MARKDOWN"].setdefault("extensions", []).append(
+        PelicanMathExtension(settings)
+    )
 
 
 def register():

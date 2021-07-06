@@ -5,12 +5,17 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.inlinepatterns import InlineProcessor
 
 from .render import render_svg
+from .settings import PelicanMathSettings
 
 
 class InlineMathProcessor(InlineProcessor):
+    def __init__(self, pattern, settings: PelicanMathSettings, md=None):
+        super().__init__(pattern, md)
+        self.settings = settings
+
     def handleMatch(self, m, data):
         equation = m.group(1).strip()
-        svg = render_svg(self.unescape(equation))
+        svg = render_svg(self.unescape(equation), self.settings)
         element = ElementTree.Element("span")
         element.set("class", "math")
         element.text = self.md.htmlStash.store(svg)
@@ -20,6 +25,10 @@ class InlineMathProcessor(InlineProcessor):
 class DisplayMathProcessor(BlockProcessor):
     RE_START = re.compile(r"^\s*\$\$\s*\n")
     RE_END = re.compile(r"\n\s*\$\$\s*$")
+
+    def __init__(self, settings: PelicanMathSettings, parser) -> None:
+        super().__init__(parser)
+        self.settings = settings
 
     def test(self, parent, block):
         return self.RE_START.match(block)
@@ -39,7 +48,7 @@ class DisplayMathProcessor(BlockProcessor):
                 element = ElementTree.SubElement(parent, "div")
                 element.set("class", "math")
                 element.text = self.parser.md.htmlStash.store(
-                    render_svg(stripped_block.strip())
+                    render_svg(stripped_block.strip(), self.settings)
                 )
                 # self.parser.parseBlocks(element, blocks[0 : block_index + 1])
 

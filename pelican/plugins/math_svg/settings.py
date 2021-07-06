@@ -11,7 +11,6 @@ class PelicanMathSettings:
     def __init__(self):
         self.scour: bool = True if shutil.which("scour") else False
         self.scour_args: list[str] = [
-            "--renderer-workaround",
             "--strip-xml-prolog",
             "--remove-titles",
             "--remove-descriptions",
@@ -38,8 +37,8 @@ class PelicanMathSettings:
         return json.dumps(obj)
 
     @staticmethod
-    def from_settings(pelican: Pelican) -> MathSvgSettings:
-        obj = MathSvgSettings()
+    def from_settings(pelican: Pelican) -> PelicanMathSettings:
+        obj = PelicanMathSettings()
         settings = pelican.settings.get("MATH_SVG", None)
 
         if settings is None:

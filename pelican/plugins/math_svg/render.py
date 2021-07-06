@@ -6,8 +6,10 @@ import sys
 import uuid
 
 import lxml.etree
+from yaml import serialize
 
 from .database import Database
+from .settings import PelicanMathSettings
 
 DEFAULT_PREAMBLE = [
     r"\documentclass[crop,border={2pt 0pt}]{standalone}",
@@ -32,7 +34,7 @@ def remove_svg_pageid(code: str) -> str:
     return lxml.etree.tostring(doc).decode()
 
 
-def render_svg(math: str) -> str:
+def render_svg(math: str, settings: PelicanMathSettings) -> str:
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 
@@ -44,12 +46,12 @@ def render_svg(math: str) -> str:
     equation = math.strip()
 
     db = Database()
-    svg = db.fetch_rendered_equation(equation)
-    if svg is not None:
+    svg, settings_string = db.fetch_rendered_equation(equation)
+    if (svg is not None) and (settings_string == settings.serialize()):
         return svg
 
     if dry_mode:
-        db.add_equation(equation)
+        db.add_equation(equation, settings)
         return f"<code>${equation}$</code>"
 
     equationid = uuid.uuid4().hex
@@ -108,9 +110,29 @@ def render_svg(math: str) -> str:
         svg = remove_svg_comments(svg)
         svg = remove_svg_pageid(svg)
 
+        if settings.scour:
+            scour_output_path = working_dir / "scour.svg"
+            subprocess.check_output(
+                [
+                    "scour",
+                    "-i",
+                    str(svgfile_path),
+                    "-o",
+                    str(scour_output_path),
+                ]
+                + settings.scour_args
+            )
+            shutil.move(scour_output_path, svgfile_path)
+
+        if settings.svgo:
+            cmd = subprocess.check_output(
+                ["svgo", "--input", str(svgfile_path), "--output", str(svgfile_path)]
+                + settings.svgo_args
+            )
+
         shutil.rmtree(working_dir)
 
-        db.add_equation(equation, svg)
+        db.add_equation(equation, settings, svg)
         return svg
 
     except subprocess.CalledProcessError:
