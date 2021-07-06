@@ -4,11 +4,17 @@ import json
 import shutil
 from typing import Any
 
+import pkg_resources
+
 from pelican import Pelican
 
 
 class PelicanMathSettings:
     def __init__(self):
+        self.plugin_version: str = pkg_resources.get_distribution(
+            "pelican-math-svg"
+        ).version
+
         self.scour: bool = True if shutil.which("scour") else False
         self.scour_args: list[str] = [
             "--strip-xml-prolog",
@@ -25,6 +31,7 @@ class PelicanMathSettings:
 
     def serialize(self) -> str:
         obj: dict[str, Any] = {
+            "plugin_version": self.plugin_version,
             "scour": self.scour,
             "svgo": self.svgo,
         }
