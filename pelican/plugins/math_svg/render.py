@@ -6,7 +6,6 @@ import sys
 import uuid
 
 import lxml.etree
-from yaml import serialize
 
 from .database import Database
 from .settings import PelicanMathSettings
