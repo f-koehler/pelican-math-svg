@@ -34,6 +34,30 @@ def remove_svg_pageid(code: str) -> str:
     return lxml.etree.tostring(doc).decode()
 
 
+def run_scour(code: str, args: list[str]) -> str:
+    return (
+        subprocess.check_output(
+            [
+                "scour",
+            ]
+            + args,
+            input=code.encode(),
+        )
+        .decode()
+        .strip()
+    )
+
+
+def run_svgo(code: str, args: list[str]) -> str:
+    return (
+        subprocess.check_output(
+            ["svgo", "--input", "-", "--output", "-"] + args, input=code.encode()
+        )
+        .decode()
+        .strip()
+    )
+
+
 def render_svg(math: str, settings: PelicanMathSettings) -> str:
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
@@ -111,24 +135,10 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
         svg = remove_svg_pageid(svg)
 
         if settings.scour:
-            scour_output_path = working_dir / "scour.svg"
-            subprocess.check_output(
-                [
-                    "scour",
-                    "-i",
-                    str(svgfile_path),
-                    "-o",
-                    str(scour_output_path),
-                ]
-                + settings.scour_args
-            )
-            shutil.move(scour_output_path, svgfile_path)
+            svg = run_scour(svg, settings.scour_args)
 
         if settings.svgo:
-            cmd = subprocess.check_output(
-                ["svgo", "--input", str(svgfile_path), "--output", str(svgfile_path)]
-                + settings.svgo_args
-            )
+            svg = run_svgo(svg, settings.svgo_args)
 
         shutil.rmtree(working_dir)
 
