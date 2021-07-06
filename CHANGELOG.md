@@ -1,5 +1,5 @@
 
-0.4.0 - 2021-07-06
+0.4.1 - 2021-07-06
 ------------------
 
-Add option to optimize SVG output using `scour` and `svgo`. Start to make settings configurable via `pelicanconf.py`.
+Store plugin version in database to trigger equation rebuild when plugin is updated.
