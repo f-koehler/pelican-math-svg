@@ -18,13 +18,13 @@ repos:
       rev: v2.20.0
       hooks:
           - id: pyupgrade
-            args: [--py36-plus]
+            args: [--py37-plus]
     - repo: https://github.com/PyCQA/flake8
       rev: 3.9.2
       hooks:
           - id: flake8
     - repo: https://github.com/PyCQA/isort
-      rev: 5.9.1
+      rev: 5.9.2
       hooks:
           - id: isort
     - repo: https://github.com/psf/black
