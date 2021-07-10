@@ -33,7 +33,7 @@ lxml = "^4.6.3"
 setuptools = "^57.1.0"
 
 [tool.poetry.dev-dependencies]
-black = { version="^20.8b1", allow-prereleases=true }
+black = { version="^21.6b0", allow-prereleases=true }
 flake8 = "^3.8"
 flake8-black = "^0.2.1"
 invoke = "^1.3"
