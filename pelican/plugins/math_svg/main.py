@@ -18,15 +18,24 @@ def main():
     settings = PelicanMathSettings.from_settings(pelican)
 
     db = Database()
-    missing = db.fetch_missing_equations()
 
+    missing = db.fetch_missing_inline()
     with multiprocessing.Pool(args.jobs) as pool:
-        rendered = pool.map(partial(render_svg, settings=settings), missing)
-
-    print(f"rendered {len(rendered)} equations")
-
+        rendered = pool.map(
+            partial(render_svg, inline=True, settings=settings), missing
+        )
     for equation, render in zip(missing, rendered):
-        db.add_equation(equation, settings, render)
+        db.add_equation(True, equation, settings, render)
+    print(f"rendered {len(rendered)} inline equations")
+
+    missing = db.fetch_missing_inline()
+    with multiprocessing.Pool(args.jobs) as pool:
+        rendered = pool.map(
+            partial(render_svg, display=True, settings=settings), missing
+        )
+    for equation, render in zip(missing, rendered):
+        db.add_equation(False, equation, settings, render)
+    print(f"rendered {len(rendered)} display equations")
 
 
 if __name__ == "__main__":

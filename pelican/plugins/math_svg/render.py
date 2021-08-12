@@ -51,7 +51,7 @@ def run_svgo(code: str, args: list[str]) -> str:
     )
 
 
-def render_svg(math: str, settings: PelicanMathSettings) -> str:
+def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 
@@ -63,7 +63,7 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
     equation = math.strip()
 
     db = Database()
-    svg, settings_string = db.fetch_rendered_equation(equation)
+    svg, settings_string = db.fetch_rendered_equation(inline, equation)
     if (svg is not None) and (settings_string == settings.serialize()):
         return svg
 
@@ -117,11 +117,27 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
         # convert pdf to svg
         svgfile_path = working_dir / "output.svg"
         subprocess.check_output(["pdfcrop", Path(working_dir) / "input.pdf"])
+
+        if inline:
+            scale = settings.scale_inline
+        else:
+            scale = settings.scale_display
+        scale_args = []
+        if scale != 1.0:
+            if isinstance(scale, tuple):
+                scale_args = [
+                    f"--scale={scale[0]},{scale[1]}",
+                ]
+            else:
+                scale_args = [
+                    f"--scale={scale}",
+                ]
         subprocess.check_output(
             [
                 "dvisvgm",
             ]
             + settings.dvisvgm_args
+            + scale_args
             + [
                 f"--output={svgfile_path}",
                 str(Path(working_dir) / "input.pdf"),
@@ -142,7 +158,7 @@ def render_svg(math: str, settings: PelicanMathSettings) -> str:
 
         shutil.rmtree(working_dir)
 
-        db.add_equation(equation, settings, svg)
+        db.add_equation(inline, equation, settings, svg)
         return svg
 
     except subprocess.CalledProcessError:
