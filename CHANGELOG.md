@@ -1,3 +1,7 @@
-## 0.4.2 - 2021-07-06
 
-Add settings controlling latex options/preamble as well as pdfcrop and dvisvgm options.
+0.5.0 - 2021-08-12
+------------------
+
+Add settings to rescale inline and display math. Also redesign database to achieve this.
+
+**Warning:** due to the change of the database format, it is necessary to delete the database located at `.cache/pelican-math-svg/equations.db`. This will also trigger a rebuild of all equations.
