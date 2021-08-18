@@ -88,7 +88,7 @@ def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
         return svg
 
     if dry_mode:
-        db.add_equation(equation, settings)
+        db.add_equation(inline, equation, settings)
         return f"<code>${equation}$</code>"
 
     equationid = uuid.uuid4().hex
