@@ -1,3 +1,4 @@
+import importlib.resources
 import os
 from pathlib import Path
 import shutil
@@ -27,6 +28,13 @@ def remove_svg_pageid(code: str) -> str:
     return lxml.etree.tostring(doc).decode()
 
 
+def add_title(code: str, equation: str) -> str:
+    doc = lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
+    title = lxml.etree.SubElement(doc, "title")
+    title.text = f"${equation}$"
+    return lxml.etree.tostring(doc).decode()
+
+
 def run_scour(code: str, args: list[str]) -> str:
     return (
         subprocess.check_output(
@@ -41,14 +49,26 @@ def run_scour(code: str, args: list[str]) -> str:
     )
 
 
-def run_svgo(code: str, args: list[str]) -> str:
-    return (
-        subprocess.check_output(
-            ["svgo", "--input", "-", "--output", "-"] + args, input=code.encode()
+def run_svgo(code: str, args: list[str], titles: bool) -> str:
+    if not titles:
+        return (
+            subprocess.check_output(
+                ["svgo", "--input", "-", "--output", "-"] + args, input=code.encode()
+            )
+            .decode()
+            .strip()
         )
-        .decode()
-        .strip()
-    )
+
+    with importlib.resources.path("pelican.plugins.math_svg", "svgo.js") as svgo_config:
+        return (
+            subprocess.check_output(
+                ["svgo", "--input", "-", "--output", "-", "--config", str(svgo_config)]
+                + args,
+                input=code.encode(),
+            )
+            .decode()
+            .strip()
+        )
 
 
 def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
@@ -150,11 +170,14 @@ def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
         svg = remove_svg_comments(svg)
         svg = remove_svg_pageid(svg)
 
+        if settings.titles:
+            svg = add_title(svg, equation)
+
         if settings.scour:
             svg = run_scour(svg, settings.scour_args)
 
         if settings.svgo:
-            svg = run_svgo(svg, settings.svgo_args)
+            svg = run_svgo(svg, settings.svgo_args, settings.titles)
 
         shutil.rmtree(working_dir)
 

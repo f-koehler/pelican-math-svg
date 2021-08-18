@@ -15,6 +15,8 @@ class PelicanMathSettings:
             "pelican-math-svg"
         ).version
 
+        self.titles: bool = True
+
         self.scale_display: float | tuple[float, float] = 1.0
         self.scale_inline: float | tuple[float, float] = 1.0
 
@@ -40,10 +42,8 @@ class PelicanMathSettings:
         self.scour: bool = True if shutil.which("scour") else False
         self.scour_args: list[str] = [
             "--strip-xml-prolog",
-            "--remove-titles",
             "--remove-descriptions",
             "--remove-metadata",
-            "--remove-descriptive-elements",
             "--enable-comment-stripping",
             "--strip-xml-space",
             "--enable-id-stripping",
@@ -54,6 +54,7 @@ class PelicanMathSettings:
     def serialize(self) -> str:
         obj: dict[str, Any] = {
             "plugin_version": self.plugin_version,
+            "titles": self.titles,
             "scale_inline": self.scale_inline,
             "scale_display": self.scale_display,
             "latex": {
@@ -86,6 +87,8 @@ class PelicanMathSettings:
         if settings is None:
             return obj
 
+        obj.titles = settings.get("titles", obj.titles)
+
         obj.scale_inline = settings.get("scale_inline", obj.scale_inline)
         obj.scale_display = settings.get("scale_display", obj.scale_display)
 
@@ -95,6 +98,6 @@ class PelicanMathSettings:
 
         if "svgo" in settings:
             obj.svgo = settings["svgo"].get("enabled", obj.svgo)
-            obj.svgo_args = settings["svgo"].get("args", obj.scour_args)
+            obj.svgo_args = settings["svgo"].get("args", obj.svgo_args)
 
         return obj
