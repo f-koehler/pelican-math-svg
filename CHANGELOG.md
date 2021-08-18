@@ -1,6 +1,4 @@
-
-0.5.0 - 2021-08-12
-------------------
+## 0.5.0 - 2021-08-12
 
 Add settings to rescale inline and display math. Also redesign database to achieve this.
 
