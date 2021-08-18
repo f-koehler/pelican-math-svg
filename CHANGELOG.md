@@ -1,5 +1,6 @@
-## 0.5.0 - 2021-08-12
 
-Add settings to rescale inline and display math. Also redesign database to achieve this.
+0.6.0 - 2021-08-18
+------------------
 
-**Warning:** due to the change of the database format, it is necessary to delete the database located at `.cache/pelican-math-svg/equations.db`. This will also trigger a rebuild of all equations.
+Add a `<title>` tag to the SVG output by default to improve accessibility and instruct `scour`/`svgo` to keep it.
+This behavior can be toggled off (not recommended) via the settings (see `README.md`).
