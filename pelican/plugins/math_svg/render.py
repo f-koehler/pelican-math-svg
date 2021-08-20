@@ -28,6 +28,17 @@ def remove_svg_pageid(code: str) -> str:
     return lxml.etree.tostring(doc).decode()
 
 
+def fix_strokeonly(code: str, css_class: str) -> str:
+    doc = lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
+    for element in doc.xpath(
+        "//svg:path[@fill='none' and @stroke='#000']",
+        namespaces={"svg": "http://www.w3.org/2000/svg"},
+    ):
+        element.attrib.pop("stroke")
+        element.attrib["class"] = css_class
+    return lxml.etree.tostring(doc).decode()
+
+
 def add_title(code: str, equation: str) -> str:
     doc = lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
     title = lxml.etree.SubElement(doc, "title")
@@ -169,6 +180,7 @@ def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
 
         svg = remove_svg_comments(svg)
         svg = remove_svg_pageid(svg)
+        svg = fix_strokeonly(svg, settings.strokeonly_class)
 
         if settings.titles:
             svg = add_title(svg, equation)

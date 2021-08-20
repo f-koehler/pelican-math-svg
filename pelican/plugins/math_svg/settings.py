@@ -20,6 +20,8 @@ class PelicanMathSettings:
         self.scale_display: float | tuple[float, float] = 1.0
         self.scale_inline: float | tuple[float, float] = 1.0
 
+        self.strokeonly_class: str = "strokeonly"
+
         self.latex_preamble: list[str] = [
             r"\documentclass[crop,border={2pt 0pt}]{standalone}",
             r"\usepackage{amsmath}",
@@ -57,6 +59,7 @@ class PelicanMathSettings:
             "titles": self.titles,
             "scale_inline": self.scale_inline,
             "scale_display": self.scale_display,
+            "strokeonly_class": self.strokeonly_class,
             "latex": {
                 "args": self.latex_args,
                 "preamble": self.latex_preamble,
@@ -91,6 +94,8 @@ class PelicanMathSettings:
 
         obj.scale_inline = settings.get("scale_inline", obj.scale_inline)
         obj.scale_display = settings.get("scale_display", obj.scale_display)
+
+        obj.strokeonly_class = settings.get("strokeonly_class", obj.strokeonly_class)
 
         if "scour" in settings:
             obj.scour = settings["scour"].get("enabled", obj.scour)
