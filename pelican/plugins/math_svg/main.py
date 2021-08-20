@@ -31,7 +31,7 @@ def main():
     missing = db.fetch_missing_inline()
     with multiprocessing.Pool(args.jobs) as pool:
         rendered = pool.map(
-            partial(render_svg, display=True, settings=settings), missing
+            partial(render_svg, inline=False, settings=settings), missing
         )
     for equation, render in zip(missing, rendered):
         db.add_equation(False, equation, settings, render)

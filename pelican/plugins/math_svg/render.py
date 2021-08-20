@@ -82,7 +82,7 @@ def run_svgo(code: str, args: list[str], titles: bool) -> str:
         )
 
 
-def render_svg(inline: bool, math: str, settings: PelicanMathSettings) -> str:
+def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
     path_shelf = Path(".cache") / "pelican-math-svg"
     path_shelf.parent.mkdir(exist_ok=True, parents=True)
 

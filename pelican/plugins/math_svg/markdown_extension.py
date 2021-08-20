@@ -15,7 +15,7 @@ class InlineMathProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         equation = m.group(1).strip()
-        svg = render_svg(True, self.unescape(equation), self.settings)
+        svg = render_svg(self.unescape(equation), True, self.settings)
         element = ElementTree.Element("span")
         element.set("class", "math")
         element.text = self.md.htmlStash.store(svg)
@@ -48,7 +48,7 @@ class DisplayMathProcessor(BlockProcessor):
                 element = ElementTree.SubElement(parent, "div")
                 element.set("class", "math")
                 element.text = self.parser.md.htmlStash.store(
-                    render_svg(False, stripped_block.strip(), self.settings)
+                    render_svg(stripped_block.strip(), False, self.settings)
                 )
                 # self.parser.parseBlocks(element, blocks[0 : block_index + 1])
 
