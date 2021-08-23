@@ -23,7 +23,7 @@ class PelicanMathSettings:
         self.strokeonly_class: str = "strokeonly"
 
         self.latex_preamble: list[str] = [
-            r"\documentclass[crop,border={2pt 0pt}]{standalone}",
+            r"\documentclass[preview,border={2pt 0pt}]{standalone}",
             r"\usepackage{amsmath}",
             r"\usepackage{amssymb}",
         ]

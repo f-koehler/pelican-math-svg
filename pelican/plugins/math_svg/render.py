@@ -109,11 +109,18 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
     working_dir.mkdir(parents=True)
 
     # generate LaTeX code
+    if inline:
+        math_open = r"\("
+        math_close = r"\)"
+    else:
+        math_open = r"\begin{align*}"
+        math_close = r"\end{align*}"
+
     code = settings.latex_preamble + [
         r"\begin{document}",
-        r"$\!",
+        math_open,
         equation,
-        r"$",
+        math_close,
         r"\end{document}",
     ]
 
