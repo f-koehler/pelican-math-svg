@@ -14,6 +14,29 @@ This plugin can be installed via:
 python -m pip install pelican-math-svg
 ```
 
+Afterwards, add the plugin to the `PLUGINS` list in your `pelicanconf.py` file, e.g.:
+
+```python
+PLUGINS = ["math_svg",]
+```
+
+## Multi-Core Rendering
+
+To use multi-core rendering of equations (highly recommended, especially when many equations have to be rendered) change the `html` target in the `Makefile` of your pelican site to a three step process:
+
+```makefile
+html:
+    PELICAN_MATH_SVG_DRY=True "$(PELICAN)" "$(INPUTDIR)" -o "$(OUTPUTDIR)" -s "$(CONFFILE)" $(PELICANOPTS)
+    pelican-math-svg render -j $(shell nproc)
+    "$(PELICAN)" "$(INPUTDIR)" -o "$(OUTPUTDIR)" -s "$(CONFFILE)" $(PELICANOPTS)
+```
+
+The first commands will execute `math-svg` in dry-mode and only populate the equation database without actually rendering anything.
+The second command will render all missing equations in parallel.
+The number of threads is specified by the `-j` flag, in this example all CPU cores are used.
+Replace `$(shell nproc)` with a number to use a fixed number of cores.
+The last command is the usual pelican command and produces the output files again, know including the rendered equations.
+
 ## Requirements
 
 -   required LaTeX tools (all included in TeX Live and possibly other LaTeX distributions):
