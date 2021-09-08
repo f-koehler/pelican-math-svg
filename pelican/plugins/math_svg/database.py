@@ -90,3 +90,13 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute("SELECT equation FROM display WHERE rendered IS NULL")
         return [entry[0] for entry in cursor.fetchall()]
+
+    def fetch_rendered_inline(self) -> list[tuple[str, str]]:
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT hash, equation FROM inline WHERE rendered IS NOT NULL")
+        return [(entry[0], entry[1]) for entry in cursor.fetchall()]
+
+    def fetch_rendered_display(self) -> list[tuple[str, str]]:
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT hash, equation FROM display WHERE rendered IS NOT NULL")
+        return [(entry[0], entry[1]) for entry in cursor.fetchall()]

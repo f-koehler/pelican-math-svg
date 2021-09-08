@@ -1,5 +1,6 @@
 from functools import partial
 import multiprocessing
+from pathlib import Path
 
 import typer
 
@@ -36,6 +37,24 @@ def run(jobs: int = multiprocessing.cpu_count()):
     for equation, render in zip(missing, rendered):
         db.add_equation(False, equation, settings, render)
     print(f"rendered {len(rendered)} display equations")
+
+
+@app.command()
+def export(output: Path):
+    db = Database()
+
+    dir_inline = output / "inline"
+    dir_display = output / "display"
+    dir_inline.mkdir(exist_ok=True, parents=True)
+    dir_display.mkdir(exist_ok=True, parents=True)
+
+    for hash, rendered in db.fetch_rendered_inline():
+        with open((dir_inline / hash).with_suffix(".svg"), "w") as fptr:
+            fptr.write(rendered)
+
+    for hash, rendered in db.fetch_rendered_display():
+        with open((dir_display / hash).with_suffix(".svg"), "w") as fptr:
+            fptr.write(rendered)
 
 
 if __name__ == "__main__":
