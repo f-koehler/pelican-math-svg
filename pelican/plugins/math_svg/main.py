@@ -14,7 +14,7 @@ app = typer.Typer()
 
 
 @app.command()
-def run(jobs: int = multiprocessing.cpu_count()):
+def render(jobs: int = typer.Option(multiprocessing.cpu_count(), "-j")):
     pelican, _ = get_instance(parse_arguments([]))
     settings = PelicanMathSettings.from_settings(pelican)
 
