@@ -16,9 +16,10 @@ class Database:
         path = Path(".cache") / "pelican-math-svg"
         path.mkdir(exist_ok=True, parents=True)
         self.connection = sqlite3.connect(path / "equations.db")
-        self.cursor = self.connection.cursor()
 
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+
+        cursor.execute(
             "CREATE TABLE IF NOT EXISTS inline ("
             "  hash TEXT PRIMARY KEY CHECK (length(hash) == 64), "
             "  equation TEXT UNIQUE, "
@@ -27,7 +28,7 @@ class Database:
             ")"
         )
 
-        self.cursor.execute(
+        cursor.execute(
             "CREATE TABLE IF NOT EXISTS display ("
             "  hash TEXT PRIMARY KEY CHECK (length(hash) == 64), "
             "  equation TEXT UNIQUE, "
@@ -35,6 +36,7 @@ class Database:
             "  settings TEXT"
             ")"
         )
+
         self.connection.commit()
 
     def add_equation(
@@ -45,13 +47,15 @@ class Database:
         rendered: str | None = None,
     ):
         hash = hash_equation(equation)
+        cursor = self.connection.cursor()
+
         if inline:
-            self.cursor.execute(
+            cursor.execute(
                 "INSERT OR REPLACE INTO inline VALUES (?, ?, ?, ?)",
                 (hash, equation, rendered, settings.serialize()),
             )
         else:
-            self.cursor.execute(
+            cursor.execute(
                 "INSERT OR REPLACE INTO display VALUES (?, ?, ?, ?)",
                 (hash, equation, rendered, settings.serialize()),
             )
@@ -61,15 +65,16 @@ class Database:
         self, inline: bool, equation: str
     ) -> tuple[str | None, str | None]:
         hash = hash_equation(equation)
+        cursor = self.connection.cursor()
         if inline:
-            self.cursor.execute(
+            cursor.execute(
                 "SELECT rendered, settings FROM inline WHERE hash = ?", (hash,)
             )
         else:
-            self.cursor.execute(
+            cursor.execute(
                 "SELECT rendered, settings FROM display WHERE hash = ?", (hash,)
             )
-        entry = self.cursor.fetchone()
+        entry = cursor.fetchone()
         self.connection.commit()
         if entry:
             return entry[0], entry[1]
@@ -77,9 +82,11 @@ class Database:
         return None, None
 
     def fetch_missing_inline(self) -> list[str]:
-        self.cursor.execute("SELECT equation FROM inline WHERE rendered IS NULL")
-        return [entry[0] for entry in self.cursor.fetchall()]
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT equation FROM inline WHERE rendered IS NULL")
+        return [entry[0] for entry in cursor.fetchall()]
 
     def fetch_missing_display(self) -> list[str]:
-        self.cursor.execute("SELECT equation FROM display WHERE rendered IS NULL")
-        return [entry[0] for entry in self.cursor.fetchall()]
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT equation FROM display WHERE rendered IS NULL")
+        return [entry[0] for entry in cursor.fetchall()]
