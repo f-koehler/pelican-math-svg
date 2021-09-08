@@ -1,6 +1,7 @@
-import argparse
 from functools import partial
 import multiprocessing
+
+import typer
 
 from pelican import get_instance, parse_arguments
 
@@ -8,19 +9,18 @@ from .database import Database
 from .markdown_extension import render_svg
 from .settings import PelicanMathSettings
 
+app = typer.Typer()
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--jobs", type=int, default=multiprocessing.cpu_count())
-    args = parser.parse_args()
 
+@app.command()
+def run(jobs: int = multiprocessing.cpu_count()):
     pelican, _ = get_instance(parse_arguments([]))
     settings = PelicanMathSettings.from_settings(pelican)
 
     db = Database()
 
     missing = db.fetch_missing_inline()
-    with multiprocessing.Pool(args.jobs) as pool:
+    with multiprocessing.Pool(jobs) as pool:
         rendered = pool.map(
             partial(render_svg, inline=True, settings=settings), missing
         )
@@ -29,7 +29,7 @@ def main():
     print(f"rendered {len(rendered)} inline equations")
 
     missing = db.fetch_missing_inline()
-    with multiprocessing.Pool(args.jobs) as pool:
+    with multiprocessing.Pool(jobs) as pool:
         rendered = pool.map(
             partial(render_svg, inline=False, settings=settings), missing
         )
@@ -39,4 +39,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app()
