@@ -113,8 +113,8 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
         math_open = r"\("
         math_close = r"\)"
     else:
-        math_open = r"\begin{align*}"
-        math_close = r"\end{align*}"
+        math_open = r"\("
+        math_close = r"\)"
 
     code = settings.latex_preamble + [
         r"\begin{document}",
