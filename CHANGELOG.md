@@ -1,6 +1,4 @@
-
-0.8.0 - 2021-09-08
-------------------
+## 0.8.0 - 2021-09-08
 
 Add the export command to export all rendered equations as SVG files.
 Replace the align environment with `\(\)` to remove whitespace around equations.
