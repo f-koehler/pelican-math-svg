@@ -1,6 +1,5 @@
-## 0.8.0 - 2021-09-08
 
-Add the export command to export all rendered equations as SVG files.
-Replace the align environment with `\(\)` to remove whitespace around equations.
+0.8.1 - 2021-10-15
+------------------
 
-**Breaking change:** the command line interface of `math_svg` has been changed replace `pelican-math-svg` with `pelican-math-svg render`
+Code cleanup using an extended pre-commit config.
