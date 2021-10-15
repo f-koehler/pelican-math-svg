@@ -12,7 +12,7 @@ from pelican import Pelican
 class PelicanMathSettings:
     def __init__(self):
         self.plugin_version: str = pkg_resources.get_distribution(
-            "pelican-math-svg"
+            "pelican-math-svg",
         ).version
 
         self.titles: bool = True

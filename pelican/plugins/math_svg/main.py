@@ -23,7 +23,8 @@ def render(jobs: int = typer.Option(multiprocessing.cpu_count(), "-j")):
     missing = db.fetch_missing_inline()
     with multiprocessing.Pool(jobs) as pool:
         rendered = pool.map(
-            partial(render_svg, inline=True, settings=settings), missing
+            partial(render_svg, inline=True, settings=settings),
+            missing,
         )
     for equation, render in zip(missing, rendered):
         db.add_equation(True, equation, settings, render)
@@ -32,7 +33,8 @@ def render(jobs: int = typer.Option(multiprocessing.cpu_count(), "-j")):
     missing = db.fetch_missing_inline()
     with multiprocessing.Pool(jobs) as pool:
         rendered = pool.map(
-            partial(render_svg, inline=False, settings=settings), missing
+            partial(render_svg, inline=False, settings=settings),
+            missing,
         )
     for equation, render in zip(missing, rendered):
         db.add_equation(False, equation, settings, render)

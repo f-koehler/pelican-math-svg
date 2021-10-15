@@ -25,7 +25,7 @@ class Database:
             "  equation TEXT UNIQUE, "
             "  rendered TEXT, "
             "  settings TEXT"
-            ")"
+            ")",
         )
 
         cursor.execute(
@@ -34,7 +34,7 @@ class Database:
             "  equation TEXT UNIQUE, "
             "  rendered TEXT, "
             "  settings TEXT"
-            ")"
+            ")",
         )
 
         self.connection.commit()
@@ -62,17 +62,21 @@ class Database:
         self.connection.commit()
 
     def fetch_rendered_equation(
-        self, inline: bool, equation: str
+        self,
+        inline: bool,
+        equation: str,
     ) -> tuple[str | None, str | None]:
         hash = hash_equation(equation)
         cursor = self.connection.cursor()
         if inline:
             cursor.execute(
-                "SELECT rendered, settings FROM inline WHERE hash = ?", (hash,)
+                "SELECT rendered, settings FROM inline WHERE hash = ?",
+                (hash,),
             )
         else:
             cursor.execute(
-                "SELECT rendered, settings FROM display WHERE hash = ?", (hash,)
+                "SELECT rendered, settings FROM display WHERE hash = ?",
+                (hash,),
             )
         entry = cursor.fetchone()
         self.connection.commit()

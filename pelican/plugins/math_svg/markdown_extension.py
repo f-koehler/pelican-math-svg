@@ -48,7 +48,7 @@ class DisplayMathProcessor(BlockProcessor):
                 element = ElementTree.SubElement(parent, "div")
                 element.set("class", "math")
                 element.text = self.parser.md.htmlStash.store(
-                    render_svg(stripped_block.strip(), False, self.settings)
+                    render_svg(stripped_block.strip(), False, self.settings),
                 )
                 # self.parser.parseBlocks(element, blocks[0 : block_index + 1])
 

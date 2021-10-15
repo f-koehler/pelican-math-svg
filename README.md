@@ -18,7 +18,9 @@ python -m pip install pelican-math-svg
 Afterwards, add the plugin to the `PLUGINS` list in your `pelicanconf.py` file, e.g.:
 
 ```python
-PLUGINS = ["math_svg",]
+PLUGINS = [
+    "math_svg",
+]
 ```
 
 ## Multi-Core Rendering

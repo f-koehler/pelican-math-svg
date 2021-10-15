@@ -1,1 +1,1 @@
-from .math_svg import *  # NOQA
+from .math_svg import register  # noqa: F401

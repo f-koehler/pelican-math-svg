@@ -14,14 +14,15 @@ from .settings import PelicanMathSettings
 
 def remove_svg_comments(code: str) -> str:
     return lxml.etree.tostring(
-        lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
+        lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser()),
     ).decode()
 
 
 def remove_svg_pageid(code: str) -> str:
     doc = lxml.etree.fromstring(code.encode(), parser=lxml.etree.ETCompatXMLParser())
     for element in doc.xpath(
-        "//svg:g", namespaces={"svg": "http://www.w3.org/2000/svg"}
+        "//svg:g",
+        namespaces={"svg": "http://www.w3.org/2000/svg"},
     ):
         if element.attrib.get("id", "") == "page1":
             element.attrib.pop("id")
@@ -64,7 +65,8 @@ def run_svgo(code: str, args: list[str], titles: bool) -> str:
     if not titles:
         return (
             subprocess.check_output(
-                ["svgo", "--input", "-", "--output", "-"] + args, input=code.encode()
+                ["svgo", "--input", "-", "--output", "-"] + args,
+                input=code.encode(),
             )
             .decode()
             .strip()
@@ -139,7 +141,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + settings.latex_args
             + [
                 str(texfile_path),
-            ]
+            ],
         )
 
         subprocess.check_output(
@@ -149,7 +151,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + settings.pdfcrop_args
             + [
                 str(Path(working_dir) / "input.pdf"),
-            ]
+            ],
         )
 
         # convert pdf to svg
@@ -179,7 +181,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + [
                 f"--output={svgfile_path}",
                 str(Path(working_dir) / "input.pdf"),
-            ]
+            ],
         )
 
         with open(svgfile_path) as fptr:
