@@ -11,6 +11,7 @@ class PelicanMathExtension(markdown.Extension):
         self.settings = settings
 
     def extendMarkdown(self, md: markdown.core.Markdown):
+        md.registerExtension(self)
         md.inlinePatterns.register(
             InlineMathProcessor(
                 r"(?<!\\|\$)\$((?:[^$]|\\\$)+)(?<!\\)\$(?!\$)",
