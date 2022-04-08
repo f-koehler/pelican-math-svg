@@ -1,3 +1,5 @@
-## 0.8.2 - 2021-10-15
 
-Test compatibility with python 3.10.
+0.9.0 - 2022-04-08
+------------------
+
+Bump required Python version to `3.10`.
