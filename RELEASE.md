@@ -1,3 +1,3 @@
-Release type: patch
+Release type: minor
 
-Maintenance release to update dependencies.
+Bump required Python version to `3.10`.
