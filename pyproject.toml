@@ -3,7 +3,7 @@ authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
 description = "Render math expressions to svg and embed them."
 documentation = "https://docs.getpelican.com"
 keywords = ["pelican", "plugin"]
-license = "AGLP-3.0"
+license = "AGPL-3.0"
 name = "pelican-math-svg"
 packages = [{include = "pelican"}]
 readme = "README.md"
