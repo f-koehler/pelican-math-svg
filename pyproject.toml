@@ -30,7 +30,7 @@ lxml = "^4.6.3"
 markdown = {version = "^3.2.2", optional = true}
 pelican = "^4.5"
 python = ">=3.10,<4.0"
-setuptools = "^57.1.0"
+setuptools = "^63.0.0"
 typer = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
