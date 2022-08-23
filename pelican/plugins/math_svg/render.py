@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import importlib.resources
+import logging
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import uuid
-import logging
 
 import lxml.etree
 
@@ -50,44 +50,73 @@ def add_title(code: str, equation: str) -> str:
     return lxml.etree.tostring(doc).decode()
 
 
-def run_scour(code: str, args: list[str]) -> str:
-    return (
+def run_scour(
+    code: str,
+    args: list[str],
+    logger: logging.Logger = logging.getLogger(__name__ + ".run_scour"),
+) -> str:
+    logger.debug("Run scour")
+    cmd = ["scour"] + args
+    result = (
         subprocess.check_output(
-            [
-                "scour",
-            ]
-            + args,
+            cmd,
             input=code.encode(),
         )
         .decode()
         .strip()
     )
+    logger.debug("Finished running scour")
+    return result
 
 
-def run_svgo(code: str, args: list[str], titles: bool) -> str:
+def run_svgo(
+    code: str,
+    args: list[str],
+    titles: bool,
+    logger: logging.Logger = logging.getLogger(__name__ + ".run_svgo"),
+) -> str:
     if not titles:
-        return (
+        logger.debug("Run svgo")
+        cmd = ["svgo", "--input", "-", "--output", "-"] + args
+        logger.debug(f"{cmd = }")
+        result = (
             subprocess.check_output(
-                ["svgo", "--input", "-", "--output", "-"] + args,
+                cmd,
                 input=code.encode(),
             )
             .decode()
             .strip()
         )
+        logger.debug("Finished running svgo")
+        return result
 
     with importlib.resources.path("pelican.plugins.math_svg", "svgo.js") as svgo_config:
-        return (
+        logger.debug("Run svgo")
+        cmd = [
+            "svgo",
+            "--input",
+            "-",
+            "--output",
+            "-",
+            "--config",
+            str(svgo_config),
+        ] + args
+        logger.debug(f"{cmd = }")
+        result = (
             subprocess.check_output(
-                ["svgo", "--input", "-", "--output", "-", "--config", str(svgo_config)]
-                + args,
+                cmd,
                 input=code.encode(),
             )
             .decode()
             .strip()
         )
+        logger.debug("Finished running svgo")
+        return result
 
 
 def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
+    logger = logging.getLogger(__name__ + ".render_svg")
+
     if os.environ.get("PELICAN_MATH_SVG_DRY", "FALSE").upper() == "FALSE":
         dry_mode = False
     else:
@@ -98,9 +127,11 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
     db = Database()
     svg, settings_string = db.fetch_rendered_equation(inline, equation)
     if (svg is not None) and (settings_string == settings.serialize()):
+        logger.debug("Equation up-to-date")
         return svg
 
     if dry_mode:
+        logger.debug("Add unrendered equation to DB")
         db.add_equation(inline, equation, settings)
         return f"<code>${equation}$</code>"
 
@@ -109,6 +140,9 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
     if working_dir.exists():
         shutil.rmtree(working_dir)
     working_dir.mkdir(parents=True)
+
+    handler = logging.FileHandler(working_dir / "render.log")
+    handler.setLevel(logging.DEBUG)
 
     # generate LaTeX code
     if inline:
@@ -133,7 +167,8 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
 
     try:
         # render LaTeX to pdf file
-        subprocess.check_output(
+        logger.debug("Rendering LaTeX")
+        cmd = (
             [
                 settings.latex_program,
                 f"--output-directory={working_dir}",
@@ -141,23 +176,26 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + settings.latex_args
             + [
                 str(texfile_path),
-            ],
-        )
-
-        subprocess.check_output(
-            [
-                "pdfcrop",
             ]
-            + settings.pdfcrop_args
-            + [
-                str(Path(working_dir) / "input.pdf"),
-            ],
         )
+        logger.debug(f"{cmd = }")
+        output = subprocess.check_output(cmd).decode()
+        for line in output.splitlines():
+            logger.debug(line)
+        logger.debug("Finished rendering LaTeX")
+
+        logger.debug("Cropping PDF")
+        cmd = (
+            ["pdfcrop"] + settings.pdfcrop_args + [str(Path(working_dir) / "input.pdf")]
+        )
+        logger.debug(f"{cmd = }")
+        output = subprocess.check_output(cmd).decode()
+        for line in output.splitlines():
+            logger.debug(line)
+        logger.debug("Finished cropping PDF")
 
         # convert pdf to svg
         svgfile_path = working_dir / "output.svg"
-        subprocess.check_output(["pdfcrop", Path(working_dir) / "input.pdf"])
-
         if inline:
             scale = settings.scale_inline
         else:
@@ -172,7 +210,9 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
                 scale_args = [
                     f"--scale={scale}",
                 ]
-        subprocess.check_output(
+
+        logger.debug("Convert PDF to SVG")
+        cmd = (
             [
                 "dvisvgm",
             ]
@@ -181,27 +221,40 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + [
                 f"--output={svgfile_path}",
                 str(Path(working_dir) / "input.pdf"),
-            ],
+            ]
         )
+        logger.debug(f"{cmd = }")
+        subprocess.check_output(cmd)
+        logger.debug("Finished converting PDF to SVG")
 
         with open(svgfile_path) as fptr:
             svg = fptr.read().strip()
 
+        logging.info("Remove SVG comments")
         svg = remove_svg_comments(svg)
+
+        logging.info("Remove SVG pageid")
         svg = remove_svg_pageid(svg)
+
+        logging.info("Fix strokeonly class")
         svg = fix_strokeonly(svg, settings.strokeonly_class)
 
         if settings.titles:
+            logger.debug("Add title to SVG")
             svg = add_title(svg, equation)
 
         if settings.scour:
-            svg = run_scour(svg, settings.scour_args)
+            svg = run_scour(svg, settings.scour_args, logger)
 
         if settings.svgo:
-            svg = run_svgo(svg, settings.svgo_args, settings.titles)
+            svg = run_svgo(svg, settings.svgo_args, settings.titles, logger)
 
+        logger.removeHandler(handler)
+        handler.close()
+        logger.debug("Remove working directory")
         shutil.rmtree(working_dir)
 
+        logger.debug("Store rendered equation")
         db.add_equation(inline, equation, settings, svg)
         return svg
 
