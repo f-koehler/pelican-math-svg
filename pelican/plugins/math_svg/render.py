@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import uuid
+import logging
 
 import lxml.etree
 
@@ -87,9 +88,6 @@ def run_svgo(code: str, args: list[str], titles: bool) -> str:
 
 
 def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
-    path_shelf = Path(".cache") / "pelican-math-svg"
-    path_shelf.parent.mkdir(exist_ok=True, parents=True)
-
     if os.environ.get("PELICAN_MATH_SVG_DRY", "FALSE").upper() == "FALSE":
         dry_mode = False
     else:
