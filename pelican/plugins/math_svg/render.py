@@ -220,11 +220,15 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
             + scale_args
             + [
                 f"--output={svgfile_path}",
-                str(Path(working_dir) / "input.pdf"),
+                str(Path(working_dir) / "input-crop.pdf"),
             ]
         )
+        env = os.environ.copy()
+        env["GS_OPTIONS"] = "-dNEWPDF=false"
         logger.debug(f"{cmd = }")
-        subprocess.check_output(cmd)
+        output = subprocess.check_output(cmd, env=env).decode()
+        for line in output.splitlines():
+            logger.debug(line)
         logger.debug("Finished converting PDF to SVG")
 
         with open(svgfile_path) as fptr:
