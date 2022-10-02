@@ -1,6 +1,7 @@
 from functools import partial
 import multiprocessing
 from pathlib import Path
+import logging
 
 import typer
 
@@ -60,4 +61,5 @@ def export(output: Path):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     app()
