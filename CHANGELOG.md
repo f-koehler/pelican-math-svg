@@ -1,5 +1,5 @@
 
-0.10.2 - 2022-10-02
+0.10.3 - 2022-10-02
 -------------------
 
-Set log level to `DEBUG` when running the standalone script.
+Log subprocess error code and stderr in render subroutine.
