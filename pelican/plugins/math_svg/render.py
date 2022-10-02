@@ -262,6 +262,8 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
         db.add_equation(inline, equation, settings, svg)
         return svg
 
-    except subprocess.CalledProcessError:
-        print(f"error rendering formula, check job {equationid}", file=sys.stderr)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"error rendering formula, check job {equationid}")
+        logger.error(f"{e.returncode = }")
+        logger.error(f"{e.stderr}")
         return f"<code>${equation}$</code>"
