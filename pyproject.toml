@@ -8,7 +8,7 @@ name = "pelican-math-svg"
 packages = [{include = "pelican"}]
 readme = "README.md"
 repository = "https://github.com/f-koehler/pelican-math-svg"
-version = "0.10.3"
+version = "0.10.4"
 
 classifiers = [
   "Development Status :: 5 - Production/Stable",

@@ -1,5 +1,5 @@
 
-0.10.3 - 2022-10-02
+0.10.4 - 2022-10-02
 -------------------
 
-Log subprocess error code and stderr in render subroutine.
+Include cmd in subprocess error logging.
