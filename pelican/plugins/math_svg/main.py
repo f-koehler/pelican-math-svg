@@ -1,7 +1,7 @@
 from functools import partial
+import logging
 import multiprocessing
 from pathlib import Path
-import logging
 
 import typer
 
