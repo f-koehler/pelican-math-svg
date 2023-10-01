@@ -34,7 +34,7 @@ setuptools = "^68.0.0"
 typer = "^0.9.0"
 
 [tool.poetry.dev-dependencies]
-Werkzeug = "^2.0"
+Werkzeug = "^3.0.0"
 bandit = "^1.6.2"
 black = {version = "^23.1", allow-prereleases = true}
 flake8 = "^6.0"
