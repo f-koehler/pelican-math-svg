@@ -31,7 +31,7 @@ markdown = {version = "^3.2.2", optional = true}
 pelican = "^4.5"
 python = ">=3.10,<4.0"
 setuptools = "^69.0.0"
-typer = "^0.11.0"
+typer = "^0.12.0"
 
 [tool.poetry.dev-dependencies]
 Werkzeug = "^3.0.0"
