@@ -77,7 +77,7 @@ def run_svgo(
     if not titles:
         logger.debug("Run svgo")
         cmd = ["svgo", "--input", "-", "--output", "-"] + args
-        logger.debug(f"{cmd =}")
+        logger.debug(f"{cmd=}")
         result = (
             subprocess.check_output(
                 cmd,
@@ -100,7 +100,7 @@ def run_svgo(
             "--config",
             str(svgo_config),
         ] + args
-        logger.debug(f"{cmd =}")
+        logger.debug(f"{cmd=}")
         result = (
             subprocess.check_output(
                 cmd,
@@ -177,7 +177,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
                 str(texfile_path),
             ]
         )
-        logger.debug(f"{cmd =}")
+        logger.debug(f"{cmd=}")
         output = subprocess.check_output(cmd).decode()
         for line in output.splitlines():
             logger.debug(line)
@@ -187,7 +187,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
         cmd = (
             ["pdfcrop"] + settings.pdfcrop_args + [str(Path(working_dir) / "input.pdf")]
         )
-        logger.debug(f"{cmd =}")
+        logger.debug(f"{cmd=}")
         output = subprocess.check_output(cmd).decode()
         for line in output.splitlines():
             logger.debug(line)
@@ -224,7 +224,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
         )
         env = os.environ.copy()
         env["GS_OPTIONS"] = "-dNEWPDF=false"
-        logger.debug(f"{cmd =}")
+        logger.debug(f"{cmd=}")
         output = subprocess.check_output(cmd, env=env).decode()
         for line in output.splitlines():
             logger.debug(line)
@@ -263,7 +263,7 @@ def render_svg(math: str, inline: bool, settings: PelicanMathSettings) -> str:
 
     except subprocess.CalledProcessError as e:
         logger.error(f"error rendering formula, check job {equationid}")
-        logger.error(f"{e.cmd =}")
-        logger.error(f"{e.returncode =}")
-        logger.error(f"{e.stderr =}")
+        logger.error(f"{e.cmd=}")
+        logger.error(f"{e.returncode=}")
+        logger.error(f"{e.stderr=}")
         return f"<code>${equation}$</code>"
