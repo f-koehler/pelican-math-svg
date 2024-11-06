@@ -95,6 +95,13 @@ class PelicanMathSettings:
         obj.scale_inline = settings.get("scale_inline", obj.scale_inline)
         obj.scale_display = settings.get("scale_display", obj.scale_display)
 
+        latex = settings.get("latex", None)
+        if latex is not None:
+            obj.latex_args = latex.get("args", obj.latex_args)
+            obj.latex_preamble = latex.get("preamble", obj.latex_preamble)
+            obj.latex_preamble.extend(latex.get("preamble_extend", ()))
+            obj.latex_program = latex.get("program", obj.latex_program)
+
         obj.strokeonly_class = settings.get("strokeonly_class", obj.strokeonly_class)
 
         if "scour" in settings:
