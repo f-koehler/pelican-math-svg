@@ -42,12 +42,12 @@ The last command is the usual pelican command and produces the output files agai
 
 ## Requirements
 
--   required LaTeX tools (all included in TeX Live and possibly other LaTeX distributions):
-    -   `lualatex` (or another LaTeX compiler if changed in the settings, [see below](#configuration))
-    -   `pdfcrop`
-    -   `dvisvgm`
--   `scour` (optional)
--   `svgo` (optional)
+- required LaTeX tools (all included in TeX Live and possibly other LaTeX distributions):
+    - `lualatex` (or another LaTeX compiler if changed in the settings, [see below](#configuration))
+    - `pdfcrop`
+    - `dvisvgm`
+- `scour` (optional)
+- `svgo` (optional)
 
 ## Usage
 
