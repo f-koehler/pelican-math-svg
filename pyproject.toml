@@ -38,7 +38,7 @@ Werkzeug = "^3.0.0"
 bandit = "^1.6.2"
 black = {version = "^25.0.0", allow-prereleases = true}
 flake8 = "^7.0.0"
-flake8-black = "^0.3.2"
+flake8-black = "^0.4.0"
 invoke = "^2.0"
 isort = "^6.0.0"
 jedi = "^0.19.0"
